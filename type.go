@@ -18,6 +18,8 @@ type Type struct {
 	idx     uint
 	low, hi int
 	once    sync.Once
+
+	sync.RWMutex
 }
 
 func (c *Type) randBuf() {
@@ -47,6 +49,9 @@ func (c *Type) randBuf() {
 }
 
 func (c *Type) get() int {
+	c.RWMutex.RLock()
+	defer c.RWMutex.RUnlock()
+
 	// init buf
 	c.once.Do(func() {
 		rand.New(rand.NewSource(time.Now().UnixNano()))
